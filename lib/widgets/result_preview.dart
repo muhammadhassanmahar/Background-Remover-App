@@ -1,10 +1,10 @@
-import 'dart:io';
-import 'dart:typed_data';
+import 'dart:io' show File;
+import 'package:flutter/foundation.dart'; // ✅ for kIsWeb & Uint8List
 import 'package:flutter/material.dart';
 
 class ResultPreview extends StatelessWidget {
-  final File originalImage;
-  final Uint8List? processedImage; // ✅ Changed to Uint8List
+  final dynamic originalImage; // ✅ Can be File (mobile) or Uint8List (web)
+  final Uint8List? processedImage;
 
   const ResultPreview({
     super.key,
@@ -14,7 +14,7 @@ class ResultPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row( // ✅ Remove extra Expanded (parent se already Expanded pass hota hai)
+    return Row(
       children: [
         Expanded(
           child: Column(
@@ -25,7 +25,7 @@ class ResultPreview extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Expanded(
-                child: Image.file(originalImage, fit: BoxFit.contain),
+                child: _buildOriginalPreview(), // ✅ use safe method
               ),
             ],
           ),
@@ -41,7 +41,7 @@ class ResultPreview extends StatelessWidget {
               const SizedBox(height: 10),
               Expanded(
                 child: processedImage != null
-                    ? Image.memory(processedImage!, fit: BoxFit.contain) // ✅ use Image.memory
+                    ? Image.memory(processedImage!, fit: BoxFit.contain)
                     : const Center(
                         child: Text(
                           "No result yet",
@@ -54,5 +54,15 @@ class ResultPreview extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Widget _buildOriginalPreview() {
+    if (kIsWeb) {
+      // ✅ On Web: always Uint8List
+      return Image.memory(originalImage as Uint8List, fit: BoxFit.contain);
+    } else {
+      // ✅ On Mobile: always File
+      return Image.file(originalImage as File, fit: BoxFit.contain);
+    }
   }
 }
