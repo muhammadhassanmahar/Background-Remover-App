@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
@@ -9,13 +10,12 @@ class BackgroundRemoverScreen extends StatefulWidget {
   const BackgroundRemoverScreen({super.key});
 
   @override
-  State<BackgroundRemoverScreen> createState() =>
-      _BackgroundRemoverScreenState();
+  State<BackgroundRemoverScreen> createState() => _BackgroundRemoverScreenState();
 }
 
 class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
   File? _selectedImage;
-  File? _processedImage;
+  Uint8List? _processedImage; // ✅ changed from File? to Uint8List?
   bool _isLoading = false;
 
   final ImagePicker _picker = ImagePicker();
@@ -37,7 +37,7 @@ class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
     final result = await ApiService.removeBackground(_selectedImage!);
 
     setState(() {
-      _processedImage = result;
+      _processedImage = result; // ✅ now Uint8List works fine
       _isLoading = false;
     });
   }
@@ -58,7 +58,7 @@ class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
             if (_selectedImage != null)
               ResultPreview(
                 originalImage: _selectedImage!,
-                processedImage: _processedImage,
+                processedImage: _processedImage, // ✅ Uint8List? pass
               )
             else
               const Expanded(

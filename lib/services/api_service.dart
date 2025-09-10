@@ -1,37 +1,10 @@
-import 'dart:io';
-import 'dart:typed_data';
-import 'package:http/http.dart' as http;
-import '../utils/app_constants.dart';
+class AppConstants {
+  // Base URL of your background remover API
+  static const String baseUrl = "https://background-removal-api.p.rapidapi.com";
 
-class ApiService {
-  /// Remove background from image
-  static Future<Uint8List?> removeBackground(File imageFile) async {
-    try {
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse("${AppConstants.baseUrl}/remove-background"),
-      );
+  // RapidAPI Key (replace with your own key from RapidAPI dashboard)
+  static const String apiKey = "YOUR_RAPIDAPI_KEY";
 
-      // Attach image file
-      request.files.add(
-        await http.MultipartFile.fromPath('image_file', imageFile.path),
-      );
-
-      // Headers
-      request.headers.addAll({
-        "X-RapidAPI-Key": AppConstants.apiKey,
-        "X-RapidAPI-Host": AppConstants.apiHost,
-      });
-
-      var response = await request.send();
-
-      if (response.statusCode == 200) {
-        return await response.stream.toBytes();
-      } else {
-        throw Exception("Failed with status ${response.statusCode}");
-      }
-    } catch (e) {
-      rethrow;
-    }
-  }
+  // RapidAPI Host
+  static const String apiHost = "background-removal-api.p.rapidapi.com";
 }
