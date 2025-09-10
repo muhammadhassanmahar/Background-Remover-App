@@ -10,12 +10,13 @@ class BackgroundRemoverScreen extends StatefulWidget {
   const BackgroundRemoverScreen({super.key});
 
   @override
-  State<BackgroundRemoverScreen> createState() => _BackgroundRemoverScreenState();
+  State<BackgroundRemoverScreen> createState() =>
+      _BackgroundRemoverScreenState();
 }
 
 class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
   File? _selectedImage;
-  Uint8List? _processedImage; // ✅ changed from File? to Uint8List?
+  Uint8List? _processedImage; // ✅ for API response
   bool _isLoading = false;
 
   final ImagePicker _picker = ImagePicker();
@@ -25,6 +26,7 @@ class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
     if (pickedFile != null) {
       setState(() {
         _selectedImage = File(pickedFile.path);
+        _processedImage = null; // reset processed when new image picked
       });
     }
   }
@@ -34,12 +36,21 @@ class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
 
     setState(() => _isLoading = true);
 
-    final result = await ApiService.removeBackground(_selectedImage!);
+    try {
+      // ✅ Pass file path to API
+      final result =
+          await ApiService.removeBackground(_selectedImage!.path);
 
-    setState(() {
-      _processedImage = result; // ✅ now Uint8List works fine
-      _isLoading = false;
-    });
+      setState(() {
+        _processedImage = result; // ✅ Uint8List works fine
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -56,9 +67,11 @@ class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
         child: Column(
           children: [
             if (_selectedImage != null)
-              ResultPreview(
-                originalImage: _selectedImage!,
-                processedImage: _processedImage, // ✅ Uint8List? pass
+              Expanded(
+                child: ResultPreview(
+                  originalImage: _selectedImage!,
+                  processedImage: _processedImage, // ✅ Uint8List? pass
+                ),
               )
             else
               const Expanded(
@@ -83,13 +96,17 @@ class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.greenAccent[400],
-                padding:
-                    const EdgeInsets.symmetric(vertical: 14, horizontal: 30),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 14,
+                  horizontal: 30,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              onPressed: _selectedImage != null ? _removeBackground : null,
+              onPressed: _selectedImage != null && !_isLoading
+                  ? _removeBackground
+                  : null,
               child: const Text(
                 "Remove Background",
                 style: TextStyle(fontSize: 16, color: Colors.black87),
