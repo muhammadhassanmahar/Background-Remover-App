@@ -38,18 +38,22 @@ class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
 
     try {
       // ✅ Pass file path to API
-      final result =
-          await ApiService.removeBackground(_selectedImage!.path);
+      final result = await ApiService.removeBackground(_selectedImage!.path);
+
+      if (!mounted) return; // ✅ context safety
 
       setState(() {
         _processedImage = result; // ✅ Uint8List works fine
       });
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: $e")),
       );
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
