@@ -15,35 +15,44 @@ class BackgroundRemoverScreen extends StatefulWidget {
 }
 
 class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
-  File? _selectedImageFile;       // ✅ mobile ke liye
-  Uint8List? _selectedImageBytes; // ✅ web ke liye
-  Uint8List? _processedImage;     // ✅ API response
+  File? _selectedImageFile;       // ✅ For mobile/desktop
+  Uint8List? _selectedImageBytes; // ✅ For web
+  Uint8List? _processedImage;     // ✅ API result
   bool _isLoading = false;
 
   final ImagePicker _picker = ImagePicker();
 
+  /// ✅ Pick image from [source] (camera/gallery)
   Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(source: source);
-    if (pickedFile != null) {
-      if (kIsWeb) {
-        // ✅ Web: read bytes
-        final bytes = await pickedFile.readAsBytes();
-        setState(() {
-          _selectedImageBytes = bytes;
-          _selectedImageFile = null;
-          _processedImage = null;
-        });
-      } else {
-        // ✅ Mobile: use File
-        setState(() {
-          _selectedImageFile = File(pickedFile.path);
-          _selectedImageBytes = null;
-          _processedImage = null;
-        });
+    try {
+      final pickedFile = await _picker.pickImage(source: source);
+      if (pickedFile != null) {
+        if (kIsWeb) {
+          // Web → read bytes
+          final bytes = await pickedFile.readAsBytes();
+          setState(() {
+            _selectedImageBytes = bytes;
+            _selectedImageFile = null;
+            _processedImage = null;
+          });
+        } else {
+          // Mobile/Desktop → File path
+          setState(() {
+            _selectedImageFile = File(pickedFile.path);
+            _selectedImageBytes = null;
+            _processedImage = null;
+          });
+        }
       }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Image selection failed: $e")),
+      );
     }
   }
 
+  /// ✅ Call API to remove background
   Future<void> _removeBackground() async {
     if (_selectedImageFile == null && _selectedImageBytes == null) return;
 
@@ -57,9 +66,13 @@ class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
 
       if (!mounted) return;
 
-      setState(() {
-        _processedImage = result;
-      });
+      if (result != null) {
+        setState(() => _processedImage = result);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Background removal failed.")),
+        );
+      }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -85,6 +98,7 @@ class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            // ✅ Image Preview
             if (hasImage)
               Expanded(
                 child: ResultPreview(
@@ -101,17 +115,25 @@ class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
                   ),
                 ),
               ),
+
+            // ✅ Loader
             if (_isLoading)
               const Padding(
                 padding: EdgeInsets.all(12),
                 child: CircularProgressIndicator(color: Colors.white),
               ),
+
             const SizedBox(height: 20),
+
+            // ✅ Camera + Gallery Buttons
             ImagePickerButtons(
               onCameraTap: () => _pickImage(ImageSource.camera),
               onGalleryTap: () => _pickImage(ImageSource.gallery),
             ),
+
             const SizedBox(height: 20),
+
+            // ✅ Remove BG Button
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.greenAccent[400],
