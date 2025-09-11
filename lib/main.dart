@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
           elevation: 0,
         ),
       ),
-      home: const BackgroundRemoverScreen(), // ✅ sidha ye open hoga
+      home: const BackgroundRemoverScreen(), // Main screen of the app
     );
   }
 }
