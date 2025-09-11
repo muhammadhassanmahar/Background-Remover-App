@@ -13,7 +13,7 @@ class ApiService {
     try {
       var request = http.MultipartRequest(
         "POST",
-        Uri.parse("${AppConstants.apiUrl}/remove-background"),
+        Uri.parse(AppConstants.apiUrl), // ✅ already contains /remove
       );
 
       // ✅ Add headers
