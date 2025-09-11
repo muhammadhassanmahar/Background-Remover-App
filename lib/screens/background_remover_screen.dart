@@ -1,5 +1,5 @@
 import 'dart:io' show File;
-import 'package:flutter/foundation.dart'; // ✅ for kIsWeb & Uint8List
+import 'package:flutter/foundation.dart'; // ✅ For kIsWeb & Uint8List
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
@@ -15,9 +15,9 @@ class BackgroundRemoverScreen extends StatefulWidget {
 }
 
 class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
-  File? _selectedImageFile;       // ✅ For mobile/desktop
+  File? _selectedImageFile; // ✅ For mobile/desktop
   Uint8List? _selectedImageBytes; // ✅ For web
-  Uint8List? _processedImage;     // ✅ API result
+  Uint8List? _processedImage; // ✅ API result
   bool _isLoading = false;
 
   final ImagePicker _picker = ImagePicker();
@@ -90,68 +90,70 @@ class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
     return Scaffold(
       backgroundColor: Colors.blueGrey[900],
       appBar: AppBar(
-        title: const Text("Remove Background"),
+        title: const Text("AI Background Remover"),
         backgroundColor: Colors.blueGrey[800],
         elevation: 0,
+        centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // ✅ Image Preview
-            if (hasImage)
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              // ✅ Image Preview
               Expanded(
-                child: ResultPreview(
-                  originalImage: _selectedImageFile ?? _selectedImageBytes!,
-                  processedImage: _processedImage,
+                child: hasImage
+                    ? ResultPreview(
+                        originalImage: _selectedImageFile ??
+                            _selectedImageBytes!, // handles both
+                        processedImage: _processedImage,
+                      )
+                    : const Center(
+                        child: Text(
+                          "📷 Select an image to begin",
+                          style:
+                              TextStyle(color: Colors.white70, fontSize: 16),
+                        ),
+                      ),
+              ),
+
+              // ✅ Loader
+              if (_isLoading)
+                const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: CircularProgressIndicator(color: Colors.white),
                 ),
-              )
-            else
-              const Expanded(
-                child: Center(
-                  child: Text(
-                    "Select an image to begin",
-                    style: TextStyle(color: Colors.white70, fontSize: 16),
+
+              const SizedBox(height: 20),
+
+              // ✅ Camera + Gallery Buttons
+              ImagePickerButtons(
+                onCameraTap: () => _pickImage(ImageSource.camera),
+                onGalleryTap: () => _pickImage(ImageSource.gallery),
+              ),
+
+              const SizedBox(height: 20),
+
+              // ✅ Remove BG Button
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.greenAccent[400],
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 30,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-              ),
-
-            // ✅ Loader
-            if (_isLoading)
-              const Padding(
-                padding: EdgeInsets.all(12),
-                child: CircularProgressIndicator(color: Colors.white),
-              ),
-
-            const SizedBox(height: 20),
-
-            // ✅ Camera + Gallery Buttons
-            ImagePickerButtons(
-              onCameraTap: () => _pickImage(ImageSource.camera),
-              onGalleryTap: () => _pickImage(ImageSource.gallery),
-            ),
-
-            const SizedBox(height: 20),
-
-            // ✅ Remove BG Button
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.greenAccent[400],
-                padding: const EdgeInsets.symmetric(
-                  vertical: 14,
-                  horizontal: 30,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                onPressed: hasImage && !_isLoading ? _removeBackground : null,
+                child: const Text(
+                  "✨ Remove Background",
+                  style: TextStyle(fontSize: 16, color: Colors.black87),
                 ),
               ),
-              onPressed: hasImage && !_isLoading ? _removeBackground : null,
-              child: const Text(
-                "Remove Background",
-                style: TextStyle(fontSize: 16, color: Colors.black87),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
