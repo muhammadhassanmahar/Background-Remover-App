@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart'; // for kIsWeb + Uint8List
+import 'package:flutter/foundation.dart'; // ✅ for kIsWeb + Uint8List
 import 'package:http/http.dart' as http;
 import '../utills/app_constants.dart';
 
@@ -11,9 +11,10 @@ class ApiService {
     Uint8List? imageBytes,
   }) async {
     try {
+      // ✅ API endpoint from AppConstants
       var request = http.MultipartRequest(
         "POST",
-        Uri.parse(AppConstants.apiUrl), // ✅ already contains /remove
+        Uri.parse(AppConstants.apiUrl), // already contains /remove
       );
 
       // ✅ Add headers
@@ -40,10 +41,11 @@ class ApiService {
         );
       }
 
+      // ✅ Send request
       var response = await request.send();
 
       if (response.statusCode == 200) {
-        return await response.stream.toBytes(); // ✅ works for both
+        return await response.stream.toBytes(); // ✅ success
       } else {
         throw Exception("Failed: ${response.statusCode}");
       }
