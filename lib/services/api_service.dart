@@ -1,11 +1,10 @@
-import 'dart:typed_data';
-import 'package:flutter/foundation.dart'; // ✅ for kIsWeb
+import 'package:flutter/foundation.dart'; // for kIsWeb + Uint8List
 import 'package:http/http.dart' as http;
 import '../utills/app_constants.dart';
 
 class ApiService {
   /// Remove background from image using RapidAPI
-  /// On Mobile: [imageFilePath] (String path)
+  /// On Mobile/Desktop: [imageFilePath] (String path)
   /// On Web: [imageBytes] (Uint8List)
   static Future<Uint8List?> removeBackground({
     String? imageFilePath,
