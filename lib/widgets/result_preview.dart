@@ -26,7 +26,15 @@ class ResultPreview extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Expanded(
-                child: _buildOriginalPreview(),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black26,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white24, width: 1),
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  child: _buildOriginalPreview(),
+                ),
               ),
             ],
           ),
@@ -44,24 +52,33 @@ class ResultPreview extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Expanded(
-                child: processedImage != null
-                    ? Image.memory(
-                        processedImage!,
-                        fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const Center(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black26,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white24, width: 1),
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  child: processedImage != null
+                      ? Image.memory(
+                          processedImage!,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) => const Center(
+                            child: Text(
+                              "⚠ Error loading image",
+                              style: TextStyle(
+                                  color: Colors.redAccent, fontSize: 14),
+                            ),
+                          ),
+                        )
+                      : const Center(
                           child: Text(
-                            "Error loading image",
-                            style:
-                                TextStyle(color: Colors.redAccent, fontSize: 14),
+                            "No result yet",
+                            style: TextStyle(
+                                color: Colors.white38, fontSize: 14),
                           ),
                         ),
-                      )
-                    : const Center(
-                        child: Text(
-                          "No result yet",
-                          style: TextStyle(color: Colors.white38, fontSize: 14),
-                        ),
-                      ),
+                ),
               ),
             ],
           ),
@@ -80,7 +97,7 @@ class ResultPreview extends StatelessWidget {
           fit: BoxFit.contain,
           errorBuilder: (_, __, ___) => const Center(
             child: Text(
-              "Invalid image",
+              "⚠ Invalid image",
               style: TextStyle(color: Colors.redAccent, fontSize: 14),
             ),
           ),
@@ -92,7 +109,7 @@ class ResultPreview extends StatelessWidget {
           fit: BoxFit.contain,
           errorBuilder: (_, __, ___) => const Center(
             child: Text(
-              "Invalid file",
+              "⚠ Invalid file",
               style: TextStyle(color: Colors.redAccent, fontSize: 14),
             ),
           ),
@@ -101,7 +118,7 @@ class ResultPreview extends StatelessWidget {
     } catch (_) {
       return const Center(
         child: Text(
-          "Preview not available",
+          "⚠ Preview not available",
           style: TextStyle(color: Colors.redAccent, fontSize: 14),
         ),
       );
