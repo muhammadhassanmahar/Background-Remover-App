@@ -15,35 +15,58 @@ class ImagePickerButtons extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        ElevatedButton.icon(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orangeAccent,
-            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+        // ✅ Camera Button
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orangeAccent,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 3,
+              ),
+              icon: const Icon(Icons.camera_alt, color: Colors.black),
+              label: const Text(
+                "Camera",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: onCameraTap,
             ),
           ),
-          icon: const Icon(Icons.camera_alt, color: Colors.black),
-          label: const Text(
-            "Camera",
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          onPressed: onCameraTap,
         ),
-        ElevatedButton.icon(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.lightBlueAccent,
-            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+
+        // ✅ Gallery Button
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.lightBlueAccent,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 3,
+              ),
+              icon: const Icon(Icons.photo, color: Colors.black),
+              label: const Text(
+                "Gallery",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: onGalleryTap,
             ),
           ),
-          icon: const Icon(Icons.photo, color: Colors.black),
-          label: const Text(
-            "Gallery",
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          onPressed: onGalleryTap,
         ),
       ],
     );
