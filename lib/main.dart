@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
 import 'screens/background_remover_screen.dart';
 
 void main() {
@@ -23,12 +22,7 @@ class MyApp extends StatelessWidget {
           elevation: 0,
         ),
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const HomeScreen(),
-        '/background-remover': (context) =>
-            const BackgroundRemoverScreen(),
-      },
+      home: const BackgroundRemoverScreen(), // ✅ sidha ye open hoga
     );
   }
 }
