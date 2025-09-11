@@ -1,5 +1,5 @@
-import 'dart:io';
-import 'dart:typed_data';
+import 'dart:io' show File;
+import 'package:flutter/foundation.dart'; // ✅ for kIsWeb & Uint8List
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
@@ -15,8 +15,9 @@ class BackgroundRemoverScreen extends StatefulWidget {
 }
 
 class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
-  File? _selectedImage;
-  Uint8List? _processedImage; // ✅ for API response
+  File? _selectedImageFile;       // ✅ mobile ke liye
+  Uint8List? _selectedImageBytes; // ✅ web ke liye
+  Uint8List? _processedImage;     // ✅ API response
   bool _isLoading = false;
 
   final ImagePicker _picker = ImagePicker();
@@ -24,26 +25,40 @@ class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-        _processedImage = null; // reset processed when new image picked
-      });
+      if (kIsWeb) {
+        // ✅ Web: read bytes
+        final bytes = await pickedFile.readAsBytes();
+        setState(() {
+          _selectedImageBytes = bytes;
+          _selectedImageFile = null;
+          _processedImage = null;
+        });
+      } else {
+        // ✅ Mobile: use File
+        setState(() {
+          _selectedImageFile = File(pickedFile.path);
+          _selectedImageBytes = null;
+          _processedImage = null;
+        });
+      }
     }
   }
 
   Future<void> _removeBackground() async {
-    if (_selectedImage == null) return;
+    if (_selectedImageFile == null && _selectedImageBytes == null) return;
 
     setState(() => _isLoading = true);
 
     try {
-      // ✅ Pass file path to API
-      final result = await ApiService.removeBackground(_selectedImage!.path);
+      final result = await ApiService.removeBackground(
+        imageFilePath: _selectedImageFile?.path,
+        imageBytes: _selectedImageBytes,
+      );
 
-      if (!mounted) return; // ✅ context safety
+      if (!mounted) return;
 
       setState(() {
-        _processedImage = result; // ✅ Uint8List works fine
+        _processedImage = result;
       });
     } catch (e) {
       if (!mounted) return;
@@ -51,14 +66,14 @@ class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
         SnackBar(content: Text("Error: $e")),
       );
     } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final hasImage = _selectedImageFile != null || _selectedImageBytes != null;
+
     return Scaffold(
       backgroundColor: Colors.blueGrey[900],
       appBar: AppBar(
@@ -70,11 +85,11 @@ class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            if (_selectedImage != null)
+            if (hasImage)
               Expanded(
                 child: ResultPreview(
-                  originalImage: _selectedImage!,
-                  processedImage: _processedImage, // ✅ Uint8List? pass
+                  originalImage: _selectedImageFile ?? _selectedImageBytes!,
+                  processedImage: _processedImage,
                 ),
               )
             else
@@ -108,9 +123,7 @@ class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              onPressed: _selectedImage != null && !_isLoading
-                  ? _removeBackground
-                  : null,
+              onPressed: hasImage && !_isLoading ? _removeBackground : null,
               child: const Text(
                 "Remove Background",
                 style: TextStyle(fontSize: 16, color: Colors.black87),
