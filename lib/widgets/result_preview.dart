@@ -16,6 +16,7 @@ class ResultPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
+        // ✅ Original Image Section
         Expanded(
           child: Column(
             children: [
@@ -25,12 +26,15 @@ class ResultPreview extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Expanded(
-                child: _buildOriginalPreview(), // ✅ use safe method
+                child: _buildOriginalPreview(),
               ),
             ],
           ),
         ),
+
         const SizedBox(width: 12),
+
+        // ✅ Processed Image Section
         Expanded(
           child: Column(
             children: [
@@ -41,7 +45,17 @@ class ResultPreview extends StatelessWidget {
               const SizedBox(height: 10),
               Expanded(
                 child: processedImage != null
-                    ? Image.memory(processedImage!, fit: BoxFit.contain)
+                    ? Image.memory(
+                        processedImage!,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => const Center(
+                          child: Text(
+                            "Error loading image",
+                            style:
+                                TextStyle(color: Colors.redAccent, fontSize: 14),
+                          ),
+                        ),
+                      )
                     : const Center(
                         child: Text(
                           "No result yet",
@@ -56,13 +70,41 @@ class ResultPreview extends StatelessWidget {
     );
   }
 
+  /// ✅ Safe method to build original image preview
   Widget _buildOriginalPreview() {
-    if (kIsWeb) {
-      // ✅ On Web: always Uint8List
-      return Image.memory(originalImage as Uint8List, fit: BoxFit.contain);
-    } else {
-      // ✅ On Mobile: always File
-      return Image.file(originalImage as File, fit: BoxFit.contain);
+    try {
+      if (kIsWeb) {
+        // Web → Uint8List
+        return Image.memory(
+          originalImage as Uint8List,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => const Center(
+            child: Text(
+              "Invalid image",
+              style: TextStyle(color: Colors.redAccent, fontSize: 14),
+            ),
+          ),
+        );
+      } else {
+        // Mobile/Desktop → File
+        return Image.file(
+          originalImage as File,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => const Center(
+            child: Text(
+              "Invalid file",
+              style: TextStyle(color: Colors.redAccent, fontSize: 14),
+            ),
+          ),
+        );
+      }
+    } catch (_) {
+      return const Center(
+        child: Text(
+          "Preview not available",
+          style: TextStyle(color: Colors.redAccent, fontSize: 14),
+        ),
+      );
     }
   }
 }
