@@ -11,9 +11,10 @@ import '../utills/app_colors.dart';
 import '../widgets/image_picker_buttons.dart';
 import '../widgets/result_preview.dart';
 
-// ✅ Web ke liye html import sirf conditionally
+// ✅ Web ke liye hi import karo
 // ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html show Blob, Url, AnchorElement;
+import 'dart:html' as html
+    show Blob, Url, AnchorElement; // Safe for web only
 
 class BackgroundRemoverScreen extends StatefulWidget {
   const BackgroundRemoverScreen({super.key});

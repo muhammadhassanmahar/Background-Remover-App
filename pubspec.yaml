@@ -23,6 +23,9 @@ dependencies:
   # 📌 Required for saving processed image to local storage
   path_provider: ^2.1.2
 
+  # 📌 Required for permissions (Storage, Camera, etc.)
+  permission_handler: ^11.3.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -32,6 +35,5 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # If you add custom images/icons later, enable this:
-  # assets:
-  #   - assets/images/
+  # 📌 Agar tum custom images/icons use karoge to uncomment karo:
+ # assets:
