@@ -5,18 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:html' as html; // ✅ Only works for Web
 
 import '../services/api_service.dart';
 import '../utills/app_colors.dart';
 import '../widgets/image_picker_buttons.dart';
 import '../widgets/result_preview.dart';
 
+// ✅ Web ke liye html import sirf conditionally
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html' as html show Blob, Url, AnchorElement;
+
 class BackgroundRemoverScreen extends StatefulWidget {
   const BackgroundRemoverScreen({super.key});
 
   @override
-  State<BackgroundRemoverScreen> createState() => _BackgroundRemoverScreenState();
+  State<BackgroundRemoverScreen> createState() =>
+      _BackgroundRemoverScreenState();
 }
 
 class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
@@ -58,8 +62,10 @@ class _BackgroundRemoverScreenState extends State<BackgroundRemoverScreen> {
 
     try {
       final result = await ApiService.removeBackground(
-        imageFilePath: !kIsWeb && _selectedImage is File ? _selectedImage.path : null,
-        imageBytes: kIsWeb && _selectedImage is Uint8List ? _selectedImage : null,
+        imageFilePath:
+            !kIsWeb && _selectedImage is File ? _selectedImage.path : null,
+        imageBytes:
+            kIsWeb && _selectedImage is Uint8List ? _selectedImage : null,
       );
 
       if (!mounted) return;
