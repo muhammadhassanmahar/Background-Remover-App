@@ -3,6 +3,21 @@ import 'package:flutter_application_1/screens/home_screen.dart';
 import 'package:flutter_application_1/screens/background_remover_screen.dart';
 
 void main() {
+  // ✅ Error screen enable karo
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: Text(
+            "⚠️ Error: ${details.exceptionAsString()}",
+            style: const TextStyle(color: Colors.red, fontSize: 18),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  };
+
   runApp(const MyApp());
 }
 
@@ -23,7 +38,6 @@ class MyApp extends StatelessWidget {
           elevation: 0,
         ),
       ),
-      // ✅ Starting screen
       initialRoute: '/',
       routes: {
         '/': (context) => const HomeScreen(),

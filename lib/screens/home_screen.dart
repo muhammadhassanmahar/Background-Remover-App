@@ -10,9 +10,8 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: Colors.blueGrey[900],
       appBar: AppBar(
         title: const Text("AI Background Remover"),
-        backgroundColor: Colors.blueGrey[800],
         centerTitle: true,
-        elevation: 0,
+        backgroundColor: Colors.blueGrey[800],
       ),
       body: SafeArea(
         child: Center(
@@ -23,10 +22,10 @@ class HomeScreen extends StatelessWidget {
               children: [
                 const Icon(
                   Icons.image_outlined,
-                  size: 120,
+                  size: 100,
                   color: Colors.white70,
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 const Text(
                   "Remove background from any image instantly with AI ✨",
                   textAlign: TextAlign.center,
@@ -36,16 +35,16 @@ class HomeScreen extends StatelessWidget {
                     height: 1.4,
                   ),
                 ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 40),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueAccent,
                     padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 36,
+                      vertical: 14,
+                      horizontal: 32,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   onPressed: () {
